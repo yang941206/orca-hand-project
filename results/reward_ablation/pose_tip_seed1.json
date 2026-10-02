@@ -1,0 +1,113 @@
+{
+  "variant": "pose_tip",
+  "seed": 1,
+  "timesteps": 311296,
+  "train_seconds": 109.6,
+  "eval": {
+    "deterministic": {
+      "success_rate": 0.0,
+      "mean_steps_to_success": null
+    },
+    "stochastic": {
+      "success_rate": 0.0,
+      "mean_steps_to_success": null
+    }
+  },
+  "curve": [
+    {
+      "timesteps": 16384,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 32768,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 49152,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 65536,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 81920,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 98304,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 114688,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 131072,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 147456,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 163840,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 180224,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 196608,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 212992,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 229376,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 245760,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 262144,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 278528,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 294912,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    },
+    {
+      "timesteps": 311296,
+      "success_rate": 0.0,
+      "ep_len_mean": 300.0
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+[1/2] pose_tip_thumb  seed=0 訓練 540s | 訓練末期成功率  72.0% | ep_rew   -807.7 | 評估 det=100% stoch=65% 平均成功步數 94.0
+[2/2] pose_tip_thumb  seed=1 訓練 531s | 訓練末期成功率  21.0% | ep_rew  -1255.6 | 評估 det=0% stoch=25% 平均成功步數 76.2

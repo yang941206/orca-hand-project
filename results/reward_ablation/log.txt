@@ -1,0 +1,6 @@
+﻿[1/6] pose            seed=0 訓練 109s | 訓練末期成功率   0.0% | 評估 det=0% stoch=0% 平均成功步數 None
+[2/6] pose            seed=1 訓練 108s | 訓練末期成功率   0.0% | 評估 det=0% stoch=0% 平均成功步數 None
+[3/6] pose_tip        seed=0 訓練 109s | 訓練末期成功率   0.0% | 評估 det=0% stoch=0% 平均成功步數 None
+[4/6] pose_tip        seed=1 訓練 110s | 訓練末期成功率   0.0% | 評估 det=0% stoch=0% 平均成功步數 None
+[5/6] pose_tip_thumb  seed=0 訓練 114s | 訓練末期成功率   0.0% | 評估 det=0% stoch=0% 平均成功步數 None
+[6/6] pose_tip_thumb  seed=1 訓練 106s | 訓練末期成功率   0.0% | 評估 det=0% stoch=0% 平均成功步數 None

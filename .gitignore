@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+
+# 跟專案無關的檔案(Claude Code 安裝程式、空檔案)
+install.cmd
+/claude
+
+# SAC / TD3 的 replay buffer(每個可達數百 MB,不需要保存)
+*replay_buffer*.pkl
+
+# 臨時檔
+demo/_*
+*.tmp
