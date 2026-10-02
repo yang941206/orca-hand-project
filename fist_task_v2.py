@@ -28,7 +28,7 @@ v1 的問題(實測):FIST_TARGET_QPOS 會讓拇指穿過食指/中指,有碰撞�
 import numpy as np
 from orca_sim import OrcaHandRight
 
-from task_utils import collision_geoms, surface_distance
+from task_utils import apply_reset_noise, collision_geoms, surface_distance
 
 
 FINGERS = ["index", "middle", "ring", "pinky"]
@@ -73,8 +73,10 @@ class OrcaFistTaskV2(OrcaHandRight):
     TIP_DIST_COEF = 1.0         # 指尖到掌心平均距離(公分)的係數
     THUMB_DIST_COEF = 0.0       # 拇指到食/中指距離(公分)的係數;實測有害,正式版關掉
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, reset_noise: float = 0.05, **kwargs):
+        """reset_noise:reset 時初始關節角度的均勻雜訊幅度(rad),0 代表不加(demo/分析腳本用)。"""
         super().__init__(*args, **kwargs)
+        self.reset_noise = reset_noise
         m = self.model
         self._palm = collision_geoms(m, "right_palm")
         self._tips = {f: collision_geoms(m, f"right_{f}_ip") for f in FINGERS}
@@ -109,7 +111,9 @@ class OrcaFistTaskV2(OrcaHandRight):
         self._prev_action = None
         self._action_delta = 0.0
         self._hold_count = 0
-        return super().reset(seed=seed, options=options)
+        super().reset(seed=seed, options=options)
+        apply_reset_noise(self, self.reset_noise)  # 約 ±3 度的初始姿勢變化
+        return self._get_obs(), self._get_info()
 
     def step(self, action):
         action = np.asarray(action, dtype=np.float32)

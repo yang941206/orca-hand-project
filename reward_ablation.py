@@ -52,9 +52,10 @@ VARIANTS = {
 }
 
 
-def make_env(env_cls):
+def make_env(env_cls, reset_noise: float = 0.0):
+    """reset_noise 預設 0:E10/E11/E13 都是在無雜訊下跑的,維持可重現。"""
     def _init():
-        env = env_cls()
+        env = env_cls(reset_noise=reset_noise)
         ones = np.ones(env.action_space.shape, dtype=np.float32)
         env = RescaleAction(env, -ones, ones)  # 動作正規化到 [-1, 1]
         return TimeLimit(env, max_episode_steps=MAX_EPISODE_STEPS)
@@ -83,11 +84,15 @@ class SuccessCurveCallback(BaseCallback):
         })
 
 
-def evaluate(model, env_cls, n_stochastic: int = 20):
-    """環境沒有隨機性,所以 deterministic 只需跑 1 集;另外跑 n 集隨機策略看穩健度。"""
-    env = make_env(env_cls)()
+def evaluate(model, env_cls, n_stochastic: int = 20, reset_noise: float = 0.0):
+    """
+    無雜訊時環境沒有隨機性,deterministic 只需跑 1 集;有雜訊時 deterministic 也跑 n 集。
+    另外跑 n 集隨機策略看穩健度。評估用 seed 0..n-1,每組設定都相同。
+    """
+    env = make_env(env_cls, reset_noise)()
     results = {}
-    for mode, n in [("deterministic", 1), ("stochastic", n_stochastic)]:
+    n_det = n_stochastic if reset_noise > 0 else 1
+    for mode, n in [("deterministic", n_det), ("stochastic", n_stochastic)]:
         successes, steps_to_success = [], []
         for ep in range(n):
             obs, _ = env.reset(seed=ep)
@@ -107,9 +112,9 @@ def evaluate(model, env_cls, n_stochastic: int = 20):
     return results
 
 
-def run_one(variant: str, seed: int, timesteps: int, n_envs: int):
+def run_one(variant: str, seed: int, timesteps: int, n_envs: int, reset_noise: float = 0.0):
     env_cls = VARIANTS[variant]
-    env = VecMonitor(SubprocVecEnv([make_env(env_cls) for _ in range(n_envs)]))
+    env = VecMonitor(SubprocVecEnv([make_env(env_cls, reset_noise) for _ in range(n_envs)]))
     model = PPO("MlpPolicy", env, device="cpu", seed=seed, verbose=0)
     callback = SuccessCurveCallback()
 
@@ -119,9 +124,9 @@ def run_one(variant: str, seed: int, timesteps: int, n_envs: int):
     env.close()
 
     result = {
-        "variant": variant, "seed": seed, "timesteps": model.num_timesteps,
+        "variant": variant, "seed": seed, "timesteps": model.num_timesteps, "reset_noise": reset_noise,
         "train_seconds": round(train_s, 1),
-        "eval": evaluate(model, env_cls),
+        "eval": evaluate(model, env_cls, reset_noise=reset_noise),
         "curve": callback.curve,
     }
     model.save(os.path.join(OUT_DIR, f"{variant}_seed{seed}"))
@@ -137,6 +142,7 @@ if __name__ == "__main__":
     parser.add_argument("--variants", nargs="+", default=list(VARIANTS))
     parser.add_argument("--n-envs", type=int, default=8)
     parser.add_argument("--out-dir", default=OUT_DIR)
+    parser.add_argument("--reset-noise", type=float, default=0.0)
     args = parser.parse_args()
     OUT_DIR = args.out_dir
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -146,7 +152,7 @@ if __name__ == "__main__":
     for variant in args.variants:
         for seed in args.seeds:
             k += 1
-            r = run_one(variant, seed, args.timesteps, args.n_envs)
+            r = run_one(variant, seed, args.timesteps, args.n_envs, args.reset_noise)
             last = r["curve"][-1] if r["curve"] else {}
             print(f"[{k}/{total}] {variant:15s} seed={seed} 訓練 {r['train_seconds']:.0f}s | "
                   f"訓練末期成功率 {last.get('success_rate', 0) * 100:5.1f}% | "

@@ -27,7 +27,7 @@ FLEX_JOINTS = [6, 7, 9, 10, 12, 13, 15, 16]  # 四指 mcp / pip
 
 
 def collect_samples(n_seeds: int = 8):
-    env = OrcaFistTaskV2()
+    env = OrcaFistTaskV2(reset_noise=0.0)
     lo, hi = env.action_low, env.action_high
     span = hi - lo
 

@@ -1,0 +1,1 @@
+pinch_v2 seed=0 noise=0.05 訓練 223s | 首次成功於 16384 步 | 訓練末期成功率 91.0% | 評估 det={'success_rate': 0.65, 'mean_steps_to_success': 151.92307692307693} stoch={'success_rate': 0.95, 'mean_steps_to_success': 110.3157894736842}

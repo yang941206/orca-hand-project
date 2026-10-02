@@ -52,3 +52,25 @@ def surface_distance(model, data, geoms_a, geoms_b, max_dist: float = 0.2) -> fl
         for a in geoms_a for b in geoms_b
     )
     return max(float(dist), 0.0)
+
+
+def apply_reset_noise(env, scale: float) -> None:
+    """
+    在 reset 後的初始關節角度加上均勻雜訊 U(-scale, scale)(單位 rad),並夾在關節可動範圍內。
+
+    為什麼需要:orca_sim 的 reset 沒有任何隨機性,每回合都從完全相同的姿勢開始(實測 E04)。
+    評估時策略又是 deterministic,「跑 N 回合」只會得到 N 次一模一樣的結果。
+    加一點雜訊後,N 回合評估才看得出策略的穩健度。
+    雜訊用 env.np_random 產生,所以 reset(seed=...) 給同一個 seed 會得到同一個初始姿勢(可重現)。
+    """
+    if scale <= 0:
+        return
+    model, data = env.model, env.data
+    noise = env.np_random.uniform(-scale, scale, size=model.nq)
+    qpos = data.qpos + noise
+    limited = model.jnt_limited.astype(bool)
+    low, high = model.jnt_range[:, 0], model.jnt_range[:, 1]
+    qpos[limited] = np.clip(qpos[limited], low[limited], high[limited])
+    data.qpos[:] = qpos
+    data.qvel[:] = 0.0
+    mujoco.mj_forward(model, data)

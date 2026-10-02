@@ -49,7 +49,7 @@ def cem(env, score, mu, sigma, iters=30, pop=48, elite=8, seed=0):
 
 
 def search_poses():
-    fist_env = OrcaFistTaskV2()
+    fist_env = OrcaFistTaskV2(reset_noise=0.0)
 
     def fist_score(x):
         settle(fist_env, x)
@@ -63,7 +63,7 @@ def search_poses():
     span = fist_env.action_high - fist_env.action_low
     fist_ctrl = cem(fist_env, fist_score, np.clip(mu, fist_env.action_low, fist_env.action_high), 0.25 * span)
 
-    pinch_env = OrcaPinchTaskV2()
+    pinch_env = OrcaPinchTaskV2(reset_noise=0.0)
     lo, hi = pinch_env.action_low, pinch_env.action_high
 
     def side_score(x):  # 只要求末節表面碰到(舊的寬鬆定義),會找到「碰到側面」的姿勢
@@ -117,7 +117,7 @@ def build_scenes(fist_ctrl, side_ctrl, pinch_ctrl):
     })
 
     # 2. v2 握拳
-    env = OrcaFistTaskV2()
+    env = OrcaFistTaskV2(reset_noise=0.0)
     ok, steps = run_until_done(env, fist_ctrl)
     settle(env, fist_ctrl)
     tips = env.tip_distances()
@@ -132,7 +132,7 @@ def build_scenes(fist_ctrl, side_ctrl, pinch_ctrl):
     })
 
     # 3. 捏合(反例):只碰到食指側面
-    env = OrcaPinchTaskV2()
+    env = OrcaPinchTaskV2(reset_noise=0.0)
     ok, _ = run_until_done(env, side_ctrl)
     settle(env, side_ctrl)
     scenes.append({
@@ -148,7 +148,7 @@ def build_scenes(fist_ctrl, side_ctrl, pinch_ctrl):
     env_v1 = OrcaPinchTask()
     ok_v1, _ = run_until_done(env_v1, pinch_ctrl)
     settle(env_v1, pinch_ctrl)
-    env = OrcaPinchTaskV2()
+    env = OrcaPinchTaskV2(reset_noise=0.0)
     ok_v2, steps = run_until_done(env, pinch_ctrl)
     settle(env, pinch_ctrl)
     scenes.append({
@@ -198,7 +198,8 @@ def save_figure(scenes, path="demo/compare_v1_v2.png"):
 def view(scenes):
     """開 MuJoCo 視窗,每個場景從張開的手慢慢動到目標 ctrl,停留幾秒。"""
     for s in scenes:
-        env = type(s["env"])(render_mode="human")
+        kwargs = {"reset_noise": 0.0} if hasattr(s["env"], "reset_noise") else {}  # v1 類別沒有這個參數
+        env = type(s["env"])(render_mode="human", **kwargs)
         print("\n" + s["title"] + "\n" + s["text"])
         env.reset()
         for _ in range(240):  # 約 4 秒

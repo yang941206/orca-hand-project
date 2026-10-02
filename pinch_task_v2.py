@@ -16,7 +16,7 @@ v2 的定義:
 import numpy as np
 from orca_sim import OrcaHandRight
 
-from task_utils import body_point_world, collision_geoms, fingertip_local_point, surface_distance
+from task_utils import apply_reset_noise, body_point_world, collision_geoms, fingertip_local_point, surface_distance
 
 
 THUMB_BODY = "right_thumb_dp"
@@ -32,8 +32,10 @@ class OrcaPinchTaskV2(OrcaHandRight):
     SUCCESS_BONUS = 5.0
     ACTION_RATE_COEF = 0.05
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, reset_noise: float = 0.05, **kwargs):
+        """reset_noise:reset 時初始關節角度的均勻雜訊幅度(rad),0 代表不加(demo/分析腳本用)。"""
         super().__init__(*args, **kwargs)
+        self.reset_noise = reset_noise
         m = self.model
         self._thumb_geoms = collision_geoms(m, THUMB_BODY)
         self._index_geoms = collision_geoms(m, INDEX_BODY)
@@ -62,7 +64,9 @@ class OrcaPinchTaskV2(OrcaHandRight):
         self._prev_action = None
         self._action_delta = 0.0
         self._hold_count = 0
-        return super().reset(seed=seed, options=options)
+        super().reset(seed=seed, options=options)
+        apply_reset_noise(self, self.reset_noise)  # 約 ±3 度的初始姿勢變化
+        return self._get_obs(), self._get_info()
 
     def step(self, action):
         action = np.asarray(action, dtype=np.float32)
