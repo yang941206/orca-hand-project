@@ -1,0 +1,9 @@
+{
+  "task": "pinch",
+  "algo": "td3",
+  "tag": "example",
+  "hyperparams": {"learning_rate": 0.0005},
+  "total_timesteps": 1500,
+  "eval_freq": 500,
+  "final_eval_episodes": 5
+}
