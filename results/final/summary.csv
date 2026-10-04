@@ -1,0 +1,3 @@
+﻿task,algo,tag,seed,total_timesteps,train_seconds,det_success_rate,det_mean_steps_to_success,det_mean_return,sto_success_rate,sto_mean_steps_to_success,steps_to_eval_success_50,steps_to_eval_success_90,steps_to_train_success_50,steps_to_train_success_90,run_dir
+fist,td3,final,0,2000000,19765.6,1.0,24.1,-183.52108400547698,1.0,24.1,25000,25000,30000,30000,results/final\fist\td3\final_seed0
+pinch,td3,final,0,1000000,6951.2,1.0,13.1,-68.88937715497882,1.0,13.1,20000,20000,10000,30000,results/final\pinch\td3\final_seed0

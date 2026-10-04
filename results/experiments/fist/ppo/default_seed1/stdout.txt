@@ -1,0 +1,3 @@
+開始:fist × ppo × default × seed 1
+完成:訓練 422s | 最終評估 det 成功率 90% (平均 33.833333333333336 步) | 隨機 95% | eval ≥50% 於 400000 步、≥90% 於 400000 步
+結果:results/experiments\fist\ppo\default_seed1

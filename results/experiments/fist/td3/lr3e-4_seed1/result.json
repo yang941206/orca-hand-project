@@ -1,0 +1,30 @@
+{
+  "task": "fist",
+  "algo": "td3",
+  "tag": "lr3e-4",
+  "seed": 1,
+  "total_timesteps": 1000000,
+  "train_seconds": 8578.1,
+  "final_eval_deterministic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 24.05,
+    "mean_return": -182.28970649314627
+  },
+  "final_eval_stochastic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 24.05,
+    "mean_return": -182.28970649314627
+  },
+  "steps_to_eval_success_50": 50000,
+  "steps_to_eval_success_90": 50000,
+  "steps_to_train_success_50": 50000,
+  "steps_to_train_success_90": 60000,
+  "versions": {
+    "torch": "2.14.0+cu130",
+    "device": "cpu",
+    "torch_threads": 4,
+    "n_envs": 1
+  }
+}

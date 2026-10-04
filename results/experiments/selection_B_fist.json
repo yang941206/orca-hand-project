@@ -1,0 +1,126 @@
+{
+  "winner": "batch512",
+  "reason": "最終成功率在最高值 100.0% 的 5 個百分點內的有 ['batch128', 'batch512', 'default', 'lr3e-3', 'lr3e-4', 'net256', 'net64'];其中達到 90% 所需步數最少(平均 33333 步)",
+  "rule": "(跑之前就固定,寫在 select_best):\n  1. 最終 deterministic 成功率(20 回合,seeds 平均)最高\n  2. 跟最高者差距在 5 個百分點以內的,比「定期評估成功率首次 ≥90% 的步數」(越少越好)\n  3. 還一樣,比「平均成功步數」(越少越好)",
+  "groups": {
+    "default": {
+      "n_seeds": 3,
+      "success_mean": 1.0,
+      "success_std": 0.0,
+      "success_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "steps90_mean": 58333.333333333336,
+      "steps90_per_seed": [
+        25000,
+        75000,
+        75000
+      ],
+      "ep_steps_mean": 25.599999999999998
+    },
+    "lr3e-4": {
+      "n_seeds": 3,
+      "success_mean": 1.0,
+      "success_std": 0.0,
+      "success_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "steps90_mean": 58333.333333333336,
+      "steps90_per_seed": [
+        25000,
+        50000,
+        100000
+      ],
+      "ep_steps_mean": 24.25
+    },
+    "lr3e-3": {
+      "n_seeds": 3,
+      "success_mean": 1.0,
+      "success_std": 0.0,
+      "success_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "steps90_mean": 50000.0,
+      "steps90_per_seed": [
+        75000,
+        25000,
+        50000
+      ],
+      "ep_steps_mean": 24.21666666666667
+    },
+    "net64": {
+      "n_seeds": 3,
+      "success_mean": 1.0,
+      "success_std": 0.0,
+      "success_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "steps90_mean": 50000.0,
+      "steps90_per_seed": [
+        50000,
+        50000,
+        50000
+      ],
+      "ep_steps_mean": 24.71666666666667
+    },
+    "net256": {
+      "n_seeds": 3,
+      "success_mean": 1.0,
+      "success_std": 0.0,
+      "success_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "steps90_mean": 50000.0,
+      "steps90_per_seed": [
+        75000,
+        25000,
+        50000
+      ],
+      "ep_steps_mean": 24.25
+    },
+    "batch128": {
+      "n_seeds": 3,
+      "success_mean": 1.0,
+      "success_std": 0.0,
+      "success_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "steps90_mean": 41666.666666666664,
+      "steps90_per_seed": [
+        50000,
+        25000,
+        50000
+      ],
+      "ep_steps_mean": 24.116666666666664
+    },
+    "batch512": {
+      "n_seeds": 3,
+      "success_mean": 1.0,
+      "success_std": 0.0,
+      "success_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "steps90_mean": 33333.333333333336,
+      "steps90_per_seed": [
+        25000,
+        50000,
+        25000
+      ],
+      "ep_steps_mean": 25.816666666666666
+    }
+  }
+}

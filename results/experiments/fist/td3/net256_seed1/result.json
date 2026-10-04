@@ -1,0 +1,30 @@
+{
+  "task": "fist",
+  "algo": "td3",
+  "tag": "net256",
+  "seed": 1,
+  "total_timesteps": 1000000,
+  "train_seconds": 6936.4,
+  "final_eval_deterministic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 24.2,
+    "mean_return": -182.02559085542185
+  },
+  "final_eval_stochastic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 24.2,
+    "mean_return": -182.02559085542185
+  },
+  "steps_to_eval_success_50": 25000,
+  "steps_to_eval_success_90": 25000,
+  "steps_to_train_success_50": 20000,
+  "steps_to_train_success_90": 20000,
+  "versions": {
+    "torch": "2.14.0+cu130",
+    "device": "cpu",
+    "torch_threads": 4,
+    "n_envs": 1
+  }
+}

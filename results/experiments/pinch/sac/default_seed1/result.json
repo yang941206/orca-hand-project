@@ -1,0 +1,30 @@
+{
+  "task": "pinch",
+  "algo": "sac",
+  "tag": "default",
+  "seed": 1,
+  "total_timesteps": 500000,
+  "train_seconds": 5099.9,
+  "final_eval_deterministic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 13.05,
+    "mean_return": -68.19339488356198
+  },
+  "final_eval_stochastic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 13.1,
+    "mean_return": -69.21870681399206
+  },
+  "steps_to_eval_success_50": 30000,
+  "steps_to_eval_success_90": 30000,
+  "steps_to_train_success_50": 10000,
+  "steps_to_train_success_90": 20000,
+  "versions": {
+    "torch": "2.14.0+cu130",
+    "device": "cpu",
+    "torch_threads": 4,
+    "n_envs": 1
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "task": "fist",
+  "algo": "sac",
+  "tag": "default",
+  "seed": 1,
+  "total_timesteps": 1000000,
+  "train_seconds": 10688.6,
+  "final_eval_deterministic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 24.0,
+    "mean_return": -174.62944434769423
+  },
+  "final_eval_stochastic": {
+    "episodes": 20,
+    "success_rate": 1.0,
+    "mean_steps_to_success": 24.05,
+    "mean_return": -176.74724561936512
+  },
+  "steps_to_eval_success_50": 75000,
+  "steps_to_eval_success_90": 75000,
+  "steps_to_train_success_50": 70000,
+  "steps_to_train_success_90": 70000,
+  "versions": {
+    "torch": "2.14.0+cu130",
+    "device": "cpu",
+    "torch_threads": 4,
+    "n_envs": 1
+  }
+}

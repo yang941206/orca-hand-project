@@ -1,0 +1,3 @@
+開始:fist × td3 × final × seed 0
+完成:訓練 19766s | 最終評估 det 成功率 100% (平均 24.1 步) | 隨機 100% | eval ≥50% 於 25000 步、≥90% 於 25000 步
+結果:results/final\fist\td3\final_seed0

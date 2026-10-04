@@ -1,0 +1,3 @@
+開始:pinch × td3 × lr3e-4 × seed 1
+完成:訓練 4182s | 最終評估 det 成功率 100% (平均 13.05 步) | 隨機 100% | eval ≥50% 於 10000 步、≥90% 於 10000 步
+結果:results/experiments\pinch\td3\lr3e-4_seed1

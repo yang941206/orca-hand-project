@@ -11,3 +11,6 @@ demo/_*
 
 # TensorBoard 紀錄(重新訓練會自動產生)
 orca_tensorboard/
+
+# 階段 A/B 的實驗模型只留本機(每個約 6.5 MB,共約 240 MB);數據都在 JSON/CSV 裡。正式版模型 results/final/ 會上傳
+results/experiments/**/model.zip

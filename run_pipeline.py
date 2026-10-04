@@ -127,7 +127,10 @@ def run_jobs(cfgs: list[ExperimentConfig], log: Logger, phase: str) -> None:
                 fields = {k: v for k, v in cfg.__dict__.items()}
                 with open(job_cfg, "w", encoding="utf-8") as f:
                     json.dump(fields, f, ensure_ascii=False, indent=2)
-                out = open(os.path.join(cfg.run_dir, "stdout.txt"), "w", encoding="utf-8")
+                # 用附加模式:重試時保留上一次失敗的錯誤訊息(E19:第一次失敗的原因因為被覆蓋而遺失)
+                out = open(os.path.join(cfg.run_dir, "stdout.txt"), "a", encoding="utf-8")
+                out.write(f"\n===== 第 {attempt} 次執行,{datetime.now():%m-%d %H:%M:%S} =====\n")
+                out.flush()
                 env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONWARNINGS": "ignore"}
                 proc = subprocess.Popen([sys.executable, "train_experiment.py", "--config", job_cfg],
                                         stdout=out, stderr=subprocess.STDOUT, env=env)
