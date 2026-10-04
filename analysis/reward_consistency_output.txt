@@ -1,0 +1,40 @@
+﻿== E08-1 ==
+ctrl = 標準姿勢:姿勢誤差 0.03,物理成功 = True(第 31 步)
+ctrl = v1 舊目標:姿勢誤差 2.19,物理成功 = False
+
+== E08-2:擾動 200 組,依姿勢誤差分組 ==
+姿勢誤差 [0,1): 10 組,物理成功率  20.0%
+姿勢誤差 [1,2): 87 組,物理成功率  11.5%
+姿勢誤差 [2,4):103 組,物理成功率   0.0%
+
+== E08-3:擾動 400 組中誤差 < 2 的失敗原因 ==
+誤差 < 2 的共 183 組:{'成功': 23, '只有四指沒碰到掌心': 80, '只有拇指沒壓到': 12, '兩者都沒': 68}
+
+== E09-1:同一批 400 組擾動,三種 reward 的一致性 ==
+物理成功(靜態判定)的姿勢:23 / 400
+pose            AUC 0.894;reward 前 25 名的成功率 32%
+pose_tip        AUC 0.918;reward 前 25 名的成功率 40%
+pose_tip_thumb  AUC 0.956;reward 前 25 名的成功率 48%
+
+== E09-2:CEM 從手張開開始只追 reward(seed 1–6)==
+  pose            seed 1:成功 = True   指尖(mm) [0, 10, 10, 5]  拇指 9.5 mm
+  pose            seed 2:成功 = False  指尖(mm) [8, 14, 9, 0]  拇指 13.9 mm
+  pose            seed 3:成功 = False  指尖(mm) [2, 11, 27, 0]  拇指 12.3 mm
+  pose            seed 4:成功 = False  指尖(mm) [3, 17, 27, 7]  拇指 18.9 mm
+  pose            seed 5:成功 = False  指尖(mm) [0, 28, 30, 7]  拇指 11.0 mm
+  pose            seed 6:成功 = False  指尖(mm) [1, 13, 32, 4]  拇指 23.0 mm
+→ pose:1/6 成功
+  pose_tip        seed 1:成功 = False  指尖(mm) [0, 10, 10, 0]  拇指 12.8 mm
+  pose_tip        seed 2:成功 = False  指尖(mm) [1, 11, 9, 0]  拇指 12.4 mm
+  pose_tip        seed 3:成功 = False  指尖(mm) [0, 9, 23, 0]  拇指 23.2 mm
+  pose_tip        seed 4:成功 = False  指尖(mm) [0, 14, 32, 0]  拇指 21.8 mm
+  pose_tip        seed 5:成功 = False  指尖(mm) [0, 11, 31, 0]  拇指 14.4 mm
+  pose_tip        seed 6:成功 = False  指尖(mm) [0, 9, 31, 0]  拇指 27.0 mm
+→ pose_tip:0/6 成功
+  pose_tip_thumb  seed 1:成功 = False  指尖(mm) [0, 18, 25, 1]  拇指 1.5 mm
+  pose_tip_thumb  seed 2:成功 = False  指尖(mm) [28, 25, 9, 0]  拇指 0.0 mm
+  pose_tip_thumb  seed 3:成功 = False  指尖(mm) [26, 20, 31, 19]  拇指 0.0 mm
+  pose_tip_thumb  seed 4:成功 = False  指尖(mm) [28, 12, 30, 0]  拇指 0.0 mm
+  pose_tip_thumb  seed 5:成功 = True   指尖(mm) [3, 9, 12, 0]  拇指 0.0 mm
+  pose_tip_thumb  seed 6:成功 = False  指尖(mm) [0, 27, 15, 0]  拇指 0.0 mm
+→ pose_tip_thumb:1/6 成功

@@ -1,0 +1,15 @@
+== 握拳 v1(門檻:qpos 距離 < 0.05)==
+1. ctrl = 目標姿勢 300 步後的 qpos 距離:0.736
+3. 穩定後互相接觸的 body: right_index_ip–right_thumb_dp; right_index_ip–right_thumb_ip; right_middle_ip–right_thumb_dp; right_middle_ip–right_thumb_ip; right_palm–right_thumb_dp; right_pinky_ip–right_ring_ip
+2. 關閉碰撞後的 qpos 距離:0.019
+4. CEM 能達到的最小 qpos 距離:0.660
+
+== 捏合 v1(門檻:body 原點距離 < 15 mm)==
+5a. 隨機 300 組 ctrl 的最小原點距離:25.1 mm
+5b. CEM 最小原點距離:17.6 mm;同姿勢下兩末節表面距離:0.00 mm(surface_distance 會把負值截成 0)
+
+== 既有 v1 PPO 模型(deterministic,1 回合)==
+6. orca_fist_ppo:500 步、回合總 reward -427.07、成功 = False、最後一步 reward -0.7057
+6. orca_pinch_ppo:300 步、回合總 reward -8.18、成功 = False、最後一步 reward -0.0243
+
+7. reset(seed=0) 與 reset(seed=123) 的初始觀測完全相同:True
