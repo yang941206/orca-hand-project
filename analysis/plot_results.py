@@ -103,6 +103,14 @@ def step_grid(run, grid):
     return np.array(out)
 
 
+def minutes_to_first90(run):
+    """首次定期評估 ≥90% 時,已經過的訓練牆鐘時間(分鐘;含定期評估的時間)。沒達到回傳 None。"""
+    for row in run["curve"]:
+        if row["eval_success_rate"] is not None and row["eval_success_rate"] >= 0.9:
+            return row["elapsed_s"] / 60
+    return None
+
+
 def fmt_k(x):
     return "—" if x is None else f"{x / 1000:.0f}k"
 
@@ -251,6 +259,18 @@ def write_tables(runs, final_runs, selections):
             t = table_rows(group(runs, task=task, algo=algo, tag="default"))
             lines.append(f"| {algo.upper()} | {t['det']} | {t['eps']} | {t['s90']} | {t['stable']} | {t['last5']} | {t['min']} |")
         lines += ["", f"自動選擇:**{selections['A'][task]['winner'].upper()}** — {selections['A'][task]['reason']}", ""]
+    lines += ["## 階段 A:首次 ≥90% 所需的「步數」與「牆鐘時間」", "",
+              "牆鐘時間取自 curve.csv 的 elapsed_s(從訓練開始計時,含定期評估;多組同時跑,有 CPU 競爭)。", "",
+              "| 任務 | 演算法 | 首次 ≥90% 步數 | 平均 | 首次 ≥90% 牆鐘時間(分) | 平均 | 整組訓練時間(分) |",
+              "|---|---|---|---|---|---|---|"]
+    for task in ["fist", "pinch"]:
+        for algo in ALGO_ORDER:
+            rs = group(runs, task=task, algo=algo, tag="default")
+            s90 = [r["steps_to_eval_success_90"] for r in rs]
+            m90 = [minutes_to_first90(r) for r in rs]
+            lines.append(f"| {TASK_NAMES[task]} | {algo.upper()} | {'/'.join(fmt_k(x) for x in s90)} | {fmt_k(np.mean(s90))} | "
+                         f"{'/'.join(f'{x:.1f}' for x in m90)} | {np.mean(m90):.1f} | {np.mean([r['train_seconds'] for r in rs]) / 60:.0f} |")
+    lines.append("")
     for task in ["fist", "pinch"]:
         lines += [f"## 階段 B:{TASK_NAMES[task]} × TD3(超參數比較)", "", head.format("設定"), sep]
         for tag in PHASE_B_ORDER:
