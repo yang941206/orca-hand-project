@@ -33,6 +33,8 @@ class BallSceneConfig:
     ball_z: float = 0.180                  # 掌心中段(掌心 z 範圍約 0.138–0.223)
     pedestal: bool = True                  # 是否有支撐台
     pedestal_radius: float = 0.010         # 支撐台半徑(細一點,減少擋到手指的機會)
+    ball_gravcomp: float = 0.0             # 球的重力補償(1 = 不受重力);可行性檢查用「虛擬支撐」時設 1。
+                                           # 注意:必須在編譯時就不為 0,MuJoCo 才會計算重力補償(見 E25)
 
     @property
     def ball_pos(self) -> np.ndarray:
@@ -52,7 +54,7 @@ def build_ball_model(cfg: BallSceneConfig = BallSceneConfig()) -> mujoco.MjModel
     spec = mujoco.MjSpec.from_file(scene_xml_path())
     world = spec.worldbody
 
-    ball = world.add_body(name="ball", pos=cfg.ball_pos)
+    ball = world.add_body(name="ball", pos=cfg.ball_pos, gravcomp=cfg.ball_gravcomp)
     ball.add_freejoint(name="ball_free")
     ball.add_geom(
         name="ball_geom",

@@ -1,0 +1,8 @@
+0. 虛擬支撐檢查 [0.095 0.06  0.18 ]:撐 2 秒移動 0.00 mm;撤台後 0.5 秒下降 147 mm
+0. 虛擬支撐檢查 [0.1   0.078 0.23 ]:撐 2 秒移動 0.00 mm;撤台後 0.5 秒下降 197 mm
+seed 0:113s | 球位置 [0.0994 0.0683 0.1985] | 撤台後 2 秒移動 1.2 mm | 握住=True | 握的過程推開 0.1 mm | 結束時接觸 ['right_palm', 'right_pinky_ip', 'right_ring_pp', 'right_thumb_dp']
+seed 1:86s | 球位置 [0.0936 0.0817 0.1954] | 撤台後 2 秒移動 0.1 mm | 握住=True | 握的過程推開 0.1 mm | 結束時接觸 ['right_index_pp', 'right_middle_ip', 'right_middle_pp', 'right_pinky_ip', 'right_pinky_pp', 'right_ring_pp', 'right_thumb_dp']
+seed 2:109s | 球位置 [0.0918 0.0705 0.1949] | 撤台後 2 秒移動 1.5 mm | 握住=True | 握的過程推開 0.1 mm | 結束時接觸 ['right_palm', 'right_pinky_ip', 'right_pinky_pp', 'right_ring_pp', 'right_thumb_dp', 'right_thumb_ip']
+seed 3:82s | 球位置 [0.096  0.0685 0.2238] | 撤台後 2 秒移動 2.2 mm | 握住=True | 握的過程推開 0.1 mm | 結束時接觸 ['right_middle_pp', 'right_pinky_ip', 'right_ring_ip', 'right_ring_pp', 'right_thumb_dp']
+seed 4:63s | 球位置 [0.0929 0.0794 0.2221] | 撤台後 2 秒移動 3.9 mm | 握住=True | 握的過程推開 33.1 mm | 結束時接觸 ['right_middle_ip', 'right_palm', 'right_pinky_pp', 'right_ring_ip', 'right_thumb_dp', 'right_thumb_ip']
+結果:5/5 個 seed 找到撤台後 2 秒仍握得住的(球位置, 指令)。存於 demo/ball_feasibility.json
