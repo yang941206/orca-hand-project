@@ -1,0 +1,7 @@
+基準(手張開,只升降):球升高 -0.4 mm,拿起來 = False
+seed 0:113s | 球升高 60.5 mm | 拿起來 = True | 握的過程推開 16.4 mm | 結束時接觸 ['right_middle_pp', 'right_pinky_ip', 'right_pinky_pp', 'right_thumb_dp']
+seed 1:87s | 球升高 58.0 mm | 拿起來 = True | 握的過程推開 6.7 mm | 結束時接觸 ['right_index_ip', 'right_pinky_ip', 'right_ring_pp', 'right_thumb_dp']
+seed 2:162s | 球升高 60.0 mm | 拿起來 = True | 握的過程推開 0.3 mm | 結束時接觸 ['right_pinky_ip', 'right_ring_ip', 'right_ring_pp', 'right_thumb_dp']
+seed 3:85s | 球升高 43.5 mm | 拿起來 = True | 握的過程推開 37.9 mm | 結束時接觸 ['right_index_pp', 'right_ring_ip', 'right_thumb_dp', 'right_thumb_mp']
+seed 4:126s | 球升高 60.3 mm | 拿起來 = True | 握的過程推開 0.0 mm | 結束時接觸 ['right_pinky_ip', 'right_ring_pp', 'right_thumb_dp']
+結果:5/5 個 seed 把球拿起來。存於 demo/lift_feasibility.json
