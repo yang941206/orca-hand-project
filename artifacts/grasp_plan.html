@@ -1,0 +1,648 @@
+<title>ORCA 抓球任務規劃</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+/* Layout: 單欄研究規劃書,固定目錄列 + 依實作順序排列的區塊;互動元件嵌在對應段落中 */
+:root{
+  --bg:#f2f5f4; --surface:#ffffff; --sunken:#e8eeec;
+  --ink:#152120; --muted:#55625f; --line:#d3dcd9;
+  --accent:#0c676c; --accent-soft:#d9ebea;
+  --pos:#0c676c; --neg:#b0443a; --idle:#a7b2af;
+  --ok:#2c7536; --ok-bg:#e1efe2;
+  --warn:#8f5d00; --warn-bg:#f6ead1;
+  --guess:#6a4b9b; --guess-bg:#ebe5f4;
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --step--1:.8125rem; --step-0:1rem; --step-1:1.1875rem; --step-2:1.5rem; --step-3:2.125rem;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1514; --surface:#172120; --sunken:#1d2928;
+  --ink:#e2ebe9; --muted:#9aa9a6; --line:#2b3836;
+  --accent:#5dc0c2; --accent-soft:#163a3b;
+  --pos:#5dc0c2; --neg:#e17a6e; --idle:#4c5a57;
+  --ok:#7ccd86; --ok-bg:#1a3320;
+  --warn:#e1b14e; --warn-bg:#382c12;
+  --guess:#b9a1e6; --guess-bg:#2c2540;
+  color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0f1514; --surface:#172120; --sunken:#1d2928;
+  --ink:#e2ebe9; --muted:#9aa9a6; --line:#2b3836;
+  --accent:#5dc0c2; --accent-soft:#163a3b;
+  --pos:#5dc0c2; --neg:#e17a6e; --idle:#4c5a57;
+  --ok:#7ccd86; --ok-bg:#1a3320;
+  --warn:#e1b14e; --warn-bg:#382c12;
+  --guess:#b9a1e6; --guess-bg:#2c2540;
+  color-scheme:dark;}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:4.5rem}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--step-0);line-height:1.75}
+.page{max-width:62rem;margin-inline:auto;padding-inline:clamp(16px,4vw,40px);padding-block:0 4rem}
+h1,h2,h3{font-family:var(--f-display);line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:var(--step-3)}
+h2{font-size:var(--step-2)}
+h3{font-size:var(--step-1)}
+p{margin:0;max-width:68ch}
+a{color:var(--accent)}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* 目錄列 */
+.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:calc(-1*clamp(16px,4vw,40px));padding:.5rem clamp(16px,4vw,40px)}
+.toc ul{list-style:none;margin:0;padding:0;display:flex;gap:.25rem;overflow-x:auto;scrollbar-width:thin}
+.toc a{display:block;white-space:nowrap;padding:.3rem .65rem;border-radius:999px;color:var(--muted);text-decoration:none;font-size:var(--step--1)}
+.toc a:hover,.toc a.on{background:var(--accent-soft);color:var(--accent)}
+
+/* 頁首 */
+header.hero{padding-block:2.75rem 2rem;display:grid;gap:1rem}
+.eyebrow{font-family:var(--f-mono);font-size:var(--step--1);letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+.lede{font-size:var(--step-1);color:var(--muted);max-width:60ch}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;font-size:var(--step--1);color:var(--muted)}
+
+/* 狀態標籤 */
+.tag{display:inline-flex;align-items:center;gap:.25rem;font-size:.75rem;font-weight:500;line-height:1;padding:.28rem .5rem;border-radius:999px;white-space:nowrap;vertical-align:.1em}
+.tag::before{content:"";width:.45rem;height:.45rem;border-radius:50%;background:currentColor}
+.tag.ok{color:var(--ok);background:var(--ok-bg)}
+.tag.warn{color:var(--warn);background:var(--warn-bg)}
+.tag.guess{color:var(--guess);background:var(--guess-bg)}
+
+section{padding-block:2.5rem;border-top:1px solid var(--line);display:grid;gap:1.25rem}
+.sec-head{display:grid;gap:.4rem}
+.sec-head .q{color:var(--muted)}
+
+/* 專有名詞提示 */
+.term{border-bottom:1px dotted var(--accent);cursor:help;background:none;border-top:0;border-left:0;border-right:0;padding:0;font:inherit;color:inherit}
+#tip{position:fixed;z-index:50;max-width:min(20rem,calc(100vw - 32px));background:var(--ink);color:var(--bg);font-size:var(--step--1);line-height:1.6;padding:.6rem .75rem;border-radius:8px;pointer-events:none;box-shadow:0 6px 20px rgb(0 0 0 / .2)}
+
+/* 背景 */
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+.metric{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;display:grid;gap:.35rem;min-width:0}
+.metric .k{font-size:var(--step--1);color:var(--muted)}
+.metric .v{font-family:var(--f-mono);font-size:var(--step-2);font-variant-numeric:tabular-nums;color:var(--ink)}
+.metric .v small{font-size:var(--step--1);color:var(--muted);font-family:var(--f-body)}
+
+/* 表格 */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9375rem}
+th,td{text-align:left;padding:.6rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-weight:500;color:var(--muted);font-size:var(--step--1);white-space:nowrap}
+td:first-child{white-space:nowrap;color:var(--muted)}
+.callout{border-left:3px solid var(--warn);background:var(--warn-bg);padding:.75rem 1rem;border-radius:0 8px 8px 0;color:var(--ink)}
+
+/* 難點 */
+.hard{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.75rem}
+details.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.85rem 1rem;min-width:0}
+details.card summary{cursor:pointer;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:.5rem}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:"+";font-family:var(--f-mono);color:var(--accent)}
+details.card[open] summary::after{content:"−"}
+details.card p{margin-top:.5rem;color:var(--muted);font-size:.9375rem}
+
+/* 方向分頁 */
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem}
+.tabs button{font:inherit;font-size:.9375rem;padding:.5rem .9rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:flex;gap:.45rem;align-items:center}
+.tabs button .l{font-family:var(--f-mono);font-weight:500;color:var(--accent)}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.tabs button[aria-selected="true"] .l{color:var(--bg)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.25rem;display:grid;gap:1rem}
+.panel-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem 1rem;align-items:baseline}
+.stars{font-family:var(--f-mono);letter-spacing:.1em;color:var(--accent)}
+.stars .off{color:var(--idle)}
+.spec{display:grid;grid-template-columns:7rem 1fr;gap:.5rem 1rem;margin:0}
+.spec dt{color:var(--muted);font-size:var(--step--1);padding-top:.15rem}
+.spec dd{margin:0;min-width:0}
+@media (max-width:30rem){.spec{grid-template-columns:1fr}.spec dt{padding-top:.5rem}}
+.proscons{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.75rem}
+.proscons div{background:var(--sunken);border-radius:8px;padding:.65rem .85rem;font-size:.9375rem;min-width:0}
+.proscons b{display:block;font-size:var(--step--1);color:var(--muted);font-weight:500}
+.curr{display:flex;gap:.75rem;align-items:flex-start;background:var(--accent-soft);border-radius:var(--r);padding:.9rem 1rem}
+.curr input{margin-top:.35rem;accent-color:var(--accent);width:1.1rem;height:1.1rem;flex:none}
+.curr label{cursor:pointer}
+
+/* reward 工具 */
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:1.25rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.25rem}
+@media (max-width:46rem){.lab{grid-template-columns:1fr}}
+.ctrl{display:grid;gap:1rem;align-content:start}
+.ctrl .row{display:grid;gap:.25rem}
+.ctrl .row label{display:flex;justify-content:space-between;gap:.5rem;font-size:.9375rem}
+.ctrl output{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.state{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{font-size:.75rem;padding:.25rem .55rem;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.chip.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.chart svg{width:100%;height:auto;display:block}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:.6rem;margin-top:.4rem}
+.total .v{font-family:var(--f-mono);font-size:var(--step-2);font-variant-numeric:tabular-nums}
+.note{font-size:var(--step--1);color:var(--muted)}
+.ref{background:var(--sunken);border-radius:var(--r);padding:1rem 1.1rem;display:grid;gap:.5rem}
+.ref ol{margin:0;padding-left:1.25rem;display:grid;gap:.25rem;font-size:.9375rem}
+
+/* 時間軸 */
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:s}
+.timeline li{display:grid;grid-template-columns:2.25rem 1fr;gap:.75rem;position:relative;padding-bottom:1rem}
+.timeline li::before{content:"";position:absolute;left:1.08rem;top:2.25rem;bottom:0;width:2px;background:var(--line)}
+.timeline li:last-child::before{display:none}
+.num{width:2.25rem;height:2.25rem;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-weight:500;border:2px solid var(--accent);color:var(--accent);background:var(--bg);position:relative;z-index:1}
+li.done .num{background:var(--accent);color:var(--bg)}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+.step summary{cursor:pointer;padding:.7rem 1rem;display:flex;flex-wrap:wrap;gap:.35rem .75rem;align-items:center;list-style:none}
+.step summary::-webkit-details-marker{display:none}
+.step summary .t{font-weight:700}
+.step summary .time{font-size:var(--step--1);color:var(--muted);margin-left:auto}
+.step .body{padding:0 1rem 1rem;display:grid;gap:.6rem;font-size:.9375rem}
+.step .why{border-left:3px solid var(--accent);padding-left:.75rem;color:var(--muted)}
+.check{display:flex;gap:.5rem;align-items:center;font-size:var(--step--1);color:var(--muted)}
+.check input{accent-color:var(--accent);width:1rem;height:1rem}
+li.done .step summary .t{text-decoration:line-through;text-decoration-color:var(--muted)}
+.progress{font-family:var(--f-mono);font-size:var(--step--1);color:var(--muted)}
+
+/* 決策樹 */
+.tree{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.25rem;display:grid;gap:1rem}
+.trail{display:flex;flex-wrap:wrap;gap:.35rem;font-size:var(--step--1);color:var(--muted)}
+.trail span{background:var(--sunken);padding:.2rem .55rem;border-radius:6px}
+.node{display:grid;gap:.75rem}
+.node .qtext{font-size:var(--step-1);font-weight:700}
+.node .answer{background:var(--accent-soft);border-radius:var(--r);padding:1rem;display:grid;gap:.5rem}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem}
+.btn{font:inherit;font-size:.9375rem;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--bg)}
+.btn.ghost{border-color:var(--line);color:var(--muted)}
+
+/* CPU/GPU */
+.switch{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.switch button{font:inherit;font-size:.9375rem;border:0;background:none;padding:.4rem 1rem;border-radius:999px;cursor:pointer;color:var(--muted)}
+.switch button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem 1.2rem;display:grid;gap:.6rem}
+.mode .pick{font-family:var(--f-mono);font-size:var(--step-2);color:var(--accent)}
+
+/* 文獻 */
+.filters{display:flex;flex-wrap:wrap;gap:.4rem}
+.filters button{font:inherit;font-size:var(--step--1);padding:.3rem .7rem;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.filters button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.papers{display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:.85rem}
+.paper{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1rem;display:grid;gap:.45rem;align-content:start;min-width:0}
+.paper .meta{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font-size:.75rem;color:var(--muted)}
+.paper .meta .topic{border:1px solid var(--line);border-radius:999px;padding:.1rem .45rem}
+.paper h3{font-family:var(--f-body);font-size:1rem;font-weight:700}
+.paper p{font-size:.9rem;color:var(--muted)}
+.paper .us{font-size:.9rem;color:var(--ink);border-top:1px dashed var(--line);padding-top:.45rem}
+.paper .us b{color:var(--accent);font-weight:500}
+.paper a{font-family:var(--f-mono);font-size:.8rem;word-break:break-all}
+
+/* 教訓 */
+.lessons{list-style:none;margin:0;padding:0;display:grid;gap:.6rem;counter-reset:l}
+.lessons li{counter-increment:l;display:grid;grid-template-columns:2rem 1fr;gap:.75rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.85rem 1rem}
+.lessons li::before{content:counter(l);font-family:var(--f-display);font-size:var(--step-2);color:var(--accent);line-height:1}
+.lessons b{display:block}
+.lessons span{color:var(--muted);font-size:.9375rem}
+
+/* 名詞 */
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.75rem 1.5rem;margin:0}
+.gloss div{min-width:0}
+.gloss dt{font-weight:700}
+.gloss dd{margin:0;color:var(--muted);font-size:.9375rem}
+footer{padding-top:2rem;border-top:1px solid var(--line);font-size:var(--step--1);color:var(--muted);display:grid;gap:.4rem}
+</style>
+
+<div class="page">
+  <nav class="toc" aria-label="目錄">
+    <ul id="toc">
+      <li><a href="#background">背景</a></li>
+      <li><a href="#env">環境事實</a></li>
+      <li><a href="#hard">為什麼難</a></li>
+      <li><a href="#directions">設計方向</a></li>
+      <li><a href="#reward">reward 工具</a></li>
+      <li><a href="#steps">實作步驟</a></li>
+      <li><a href="#tree">學不起來?</a></li>
+      <li><a href="#algo">演算法選擇</a></li>
+      <li><a href="#papers">文獻</a></li>
+      <li><a href="#lessons">五個教訓</a></li>
+      <li><a href="#glossary">名詞</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <div class="eyebrow">ORCA Hand · MuJoCo · 專題下一階段</div>
+    <h1>ORCA 抓球任務規劃</h1>
+    <p class="lede">讓 17 個關節的 ORCA 右手,用<button class="term" data-tip="強化學習(Reinforcement Learning):不告訴機器每一步怎麼做,只給分數(reward),讓它反覆嘗試、自己找出做法。">強化學習</button>學會握住一顆球。這頁整理場景設計、reward 設計、實作順序,以及學不起來時的備案。</p>
+    <div class="legend">
+      <span>內容可信度:</span>
+      <span class="tag ok">已查證</span>
+      <span class="tag warn">待驗證</span>
+      <span class="tag guess">推測</span>
+    </div>
+  </header>
+
+  <section id="background">
+    <div class="sec-head">
+      <h2>前一階段的成果</h2>
+      <p class="q">在 MuJoCo 模擬中,ORCA 右手已學會「握拳」與「捏合」,並比較了 PPO、SAC、TD3 三種演算法。</p>
+    </div>
+    <div class="compare">
+      <div class="metric"><span class="k">握拳:達到 90% 成功率所需訓練步數(3 個 seed 平均)</span><span class="v">5.8 萬 <small>TD3</small></span><span class="note">PPO 需 52.5 萬步。比步數,TD3 最好。</span></div>
+      <div class="metric"><span class="k">握拳:達到 90% 成功率所需實際時間</span><span class="v">3.8 分 <small>PPO</small></span><span class="note">TD3 需 8.1 分。比時間,PPO 最快。</span></div>
+      <div class="metric"><span class="k">最終模型成功率(20 回合)</span><span class="v">100% <small>握拳 · 捏合</small></span><span class="note">平均 24.1 步、13.1 步完成(每步 0.01 秒)。</span></div>
+    </div>
+    <p>下一步是抓球。這比握拳、捏合難,因為手要跟一個會滾、會掉的物體互動。<span class="tag ok">已查證</span></p>
+  </section>
+
+  <section id="env">
+    <div class="sec-head">
+      <h2>目前環境的已知事實</h2>
+      <p class="q">以下由程式直接讀取模擬模型確認。設計場景前,先知道手怎麼擺、能怎麼動。</p>
+    </div>
+    <div class="tbl">
+      <table>
+        <tr><th>項目</th><th>事實</th></tr>
+        <tr><td>自由度</td><td>17 個關節:手腕 1、拇指 4、其他四指各 3(左右張開、根部彎曲、中段彎曲)</td></tr>
+        <tr><td><button class="term" data-tip="觀測(observation):策略每一步看到的資訊。">觀測</button></td><td>34 個數字(17 個關節角度 + 17 個關節速度),<b>目前不包含球的資訊</b></td></tr>
+        <tr><td>動作</td><td>17 個數字(各關節目標角度),正規化到 [-1, 1]</td></tr>
+        <tr><td>時間</td><td>每步 <span class="mono">0.01 s</span>;每回合最多 300 步(3 秒)</td></tr>
+        <tr><td>手的擺放</td><td><b>固定在底座上</b>,手指朝上(+z),掌心朝 +x,重力朝 −z</td></tr>
+        <tr><td>手腕</td><td>只能沿一個軸轉動,範圍 <span class="mono">−0.67 ~ 0.9 rad</span></td></tr>
+        <tr><td>場景物體</td><td>沒有任何可自由移動的物體,球要自己加進場景</td></tr>
+      </table>
+    </div>
+    <p class="callout"><b>推論:</b>手臂不能移動,所以目前沒辦法「抓起來舉高」。要嘛改成「握住、不讓球掉」,要嘛幫手加上可滑動的關節(方向 D)。</p>
+  </section>
+
+  <section id="hard">
+    <div class="sec-head">
+      <h2>為什麼抓球比較難</h2>
+      <p class="q">點開每一項看說明。</p>
+    </div>
+    <div class="hard">
+      <details class="card"><summary>要跟物體互動</summary><p>球會被推走、滾開、掉落;掉了之後這一回合就救不回來。握拳不管怎麼亂動,下一步都還能修正。</p></details>
+      <details class="card"><summary>策略要「看得到」球</summary><p>目前的觀測只有手的 34 個數字。要再加入球相對掌心的位置和速度,否則策略不知道球在哪裡。</p></details>
+      <details class="card"><summary>接觸物理比較複雜</summary><p>摩擦、力道、接觸點都會影響結果,模擬速度也可能變慢。</p></details>
+      <details class="card"><summary>訓練量未知 <span class="tag warn">待驗證</span></summary><p>可能是握拳的好幾倍。場景建好、跑過小規模試驗之後才能估計。</p></details>
+    </div>
+  </section>
+
+  <section id="directions">
+    <div class="sec-head">
+      <h2>四個設計方向</h2>
+      <p class="q">由簡單到難。建議從 A 開始,做出來之後接 B。</p>
+    </div>
+    <div class="tabs" role="tablist" id="dirTabs"></div>
+    <div class="panel" role="tabpanel" id="dirPanel" aria-live="polite"></div>
+    <div class="curr">
+      <input type="checkbox" id="currToggle">
+      <label for="currToggle"><b>套用課程學習(curriculum learning)</b><br><span class="note" id="currText">勾選後,顯示這個方向套用課程學習時,怎麼由易到難安排。</span></label>
+    </div>
+  </section>
+
+  <section id="reward">
+    <div class="sec-head">
+      <h2>reward 設計示意:分段、條件式啟動</h2>
+      <p class="q">文獻常用的做法是把 reward 拆成幾段,前一段達成後,下一段才開始計分。拖動滑桿看每一項怎麼變。</p>
+    </div>
+    <div class="lab">
+      <div class="ctrl">
+        <div class="row"><label for="sDist">指尖到球表面的平均距離 <output id="oDist">4.0 cm</output></label><input type="range" id="sDist" min="0" max="10" step="0.5" value="4"></div>
+        <div class="row"><label for="sCont">接觸到球的手指數 <output id="oCont">2 根</output></label><input type="range" id="sCont" min="0" max="5" step="1" value="2"></div>
+        <div class="row"><label for="sOff">球離掌心的距離 <output id="oOff">2.0 cm</output></label><input type="range" id="sOff" min="0" max="10" step="0.5" value="2"></div>
+        <div class="state" id="stateChips"></div>
+        <p class="note">係數都是示意值,實際係數要由實驗決定。<span class="tag warn">待驗證</span></p>
+      </div>
+      <div class="chart">
+        <svg id="rewardSvg" viewBox="0 0 560 250" role="img" aria-label="各 reward 項目的長條圖"></svg>
+        <div class="total"><span>這一步的總 reward</span><span class="v" id="totalV">0.0</span></div>
+      </div>
+    </div>
+    <div class="ref">
+      <b>參考範本:Adroit Relocate 的 reward <span class="tag ok">已查證</span></b>
+      <p class="note">Rajeswaran 等(2017)提出的「把球拿起來、移到目標」任務,官方文件列出的 reward:</p>
+      <ol>
+        <li>手掌離球越遠扣分越多(係數 0.1)</li>
+        <li>球被抬離桌面(z &gt; 0.04 m)時 +1,這時才加入手掌到目標、球到目標的距離項(係數各 0.5)</li>
+        <li>球離目標 &lt; 0.1 m 時 +10;&lt; 0.05 m 時 +20</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="steps">
+    <div class="sec-head">
+      <h2>實作步驟</h2>
+      <p class="q">依順序執行。點開看細節,完成後打勾(勾選只存在你自己的瀏覽器)。 <span class="progress" id="progress"></span></p>
+    </div>
+    <ol class="timeline" id="timeline"></ol>
+  </section>
+
+  <section id="tree">
+    <div class="sec-head">
+      <h2>學不起來怎麼辦</h2>
+      <p class="q">依實際狀況回答問題,一步步找到下一步該做什麼。</p>
+    </div>
+    <div class="tree">
+      <div class="trail" id="trail"></div>
+      <div class="node" id="node"></div>
+    </div>
+  </section>
+
+  <section id="algo">
+    <div class="sec-head">
+      <h2>演算法選擇:看你的瓶頸是什麼</h2>
+      <p class="q">文獻大多用 PPO,我們的實驗卻是 TD3 勝出。兩者不矛盾,差別在模擬跑在哪裡。</p>
+    </div>
+    <div class="switch" role="group" aria-label="模擬方式">
+      <button type="button" id="mCpu" aria-pressed="true">CPU 模擬(目前)</button>
+      <button type="button" id="mGpu" aria-pressed="false">GPU 大量平行</button>
+    </div>
+    <div class="mode" id="modeBox"></div>
+  </section>
+
+  <section id="papers">
+    <div class="sec-head">
+      <h2>相關文獻</h2>
+      <p class="q">12 篇,皆經網路查證存在。依主題篩選。</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="papers" id="paperGrid"></div>
+  </section>
+
+  <section id="lessons">
+    <div class="sec-head">
+      <h2>從前一階段帶過來的五個教訓</h2>
+    </div>
+    <ol class="lessons">
+      <li><div><b>訓練前先檢查成功條件做不做得到</b><span>握拳 v1 的目標姿勢會讓拇指穿過其他手指,物理上不可能成功,訓練再久都是 0%。</span></div></li>
+      <li><div><b>把結果畫出來看</b><span>捏合曾出現「拇指碰到食指側面也判定成功」的漏洞,數字完全看不出來,畫成圖才發現。</span></div></li>
+      <li><div><b>reward 設計要用實際訓練驗證</b><span>拇指距離項在靜態分析中最好(AUC 0.956),實際訓練卻最差。</span></div></li>
+      <li><div><b>訓練預算要給夠才能下結論</b><span>握拳在 30 萬步時三種 reward 全部 0%,到 100 萬步全部學會。</span></div></li>
+      <li><div><b>多跑幾個隨機種子</b><span>超參數比較中,同一設定換 seed 的差距,比設定之間的差距還大。</span></div></li>
+    </ol>
+  </section>
+
+  <section id="glossary">
+    <div class="sec-head"><h2>名詞解釋</h2></div>
+    <dl class="gloss">
+      <div><dt>Reward(獎勵)</dt><dd>每一步的分數,告訴策略做得好不好。</dd></div>
+      <div><dt>Episode(回合)</dt><dd>從初始姿勢到成功或時間到(300 步)為止的一段過程。</dd></div>
+      <div><dt>Policy(策略)</dt><dd>看到觀測後決定動作的規則,這裡是一個神經網路。</dd></div>
+      <div><dt>On-policy / Off-policy</dt><dd>只用目前策略剛收集的資料學習(PPO)/ 把所有經驗存起來反覆學(SAC、TD3)。</dd></div>
+      <div><dt>CEM(交叉熵法)</dt><dd>反覆「隨機產生候選指令 → 留下最好的 → 調整抽樣範圍」的最佳化方法,用來檢查某件事物理上做不做得到。不是強化學習。</dd></div>
+      <div><dt>HER</dt><dd>Hindsight Experience Replay:把失敗的經驗改寫成「假裝目標就是最後到達的位置」,讓只有成功才給分的稀疏 reward 也學得會。需搭配 off-policy 演算法。</dd></div>
+      <div><dt>課程學習(curriculum)</dt><dd>先學簡單版本,再逐步加難,像學校課程由淺入深。</dd></div>
+      <div><dt>領域隨機化</dt><dd>訓練時隨機改變摩擦力、重量等物理參數,讓策略不依賴某組特定數值。</dd></div>
+      <div><dt>Sim-to-real</dt><dd>在模擬器訓練,再搬到真實機器人上使用。</dd></div>
+      <div><dt>探索雜訊</dt><dd>訓練時在動作上加隨機變化,讓策略嘗試新動作。SB3 的 TD3 預設不加。</dd></div>
+    </dl>
+  </section>
+
+  <footer>
+    <span>資料來源:專案實驗紀錄 E01–E23(2026-10)、文獻整理(2026-10-05 查證)。</span>
+    <span>程式碼:github.com/yang941206/orca-hand-project(私人)</span>
+  </footer>
+</div>
+
+<div id="tip" hidden></div>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch(e){ return d; } },
+    set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+  };
+  const tag = (t) => ({ok:'<span class="tag ok">已查證</span>', warn:'<span class="tag warn">待驗證</span>', guess:'<span class="tag guess">推測</span>'})[t] || '';
+
+  /* ---------- 名詞提示 ---------- */
+  const tip = $('#tip');
+  function showTip(el){
+    tip.textContent = el.dataset.tip; tip.hidden = false;
+    const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    let x = Math.min(Math.max(16, r.left), window.innerWidth - tw - 16);
+    let y = r.bottom + 8; if (y + th > window.innerHeight - 8) y = r.top - th - 8;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  document.addEventListener('mouseover', e => { const t = e.target.closest('.term'); if (t) showTip(t); });
+  document.addEventListener('mouseout', e => { if (e.target.closest('.term')) tip.hidden = true; });
+  document.addEventListener('focusin', e => { const t = e.target.closest('.term'); if (t) showTip(t); });
+  document.addEventListener('focusout', e => { if (e.target.closest('.term')) tip.hidden = true; });
+  document.addEventListener('click', e => { const t = e.target.closest('.term'); if (t) { showTip(t); } else { tip.hidden = true; } });
+  window.addEventListener('scroll', () => { tip.hidden = true; }, {passive:true});
+
+  /* ---------- 目錄高亮 ---------- */
+  const links = [...document.querySelectorAll('#toc a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+  const io = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting) { links.forEach(l => l.classList.toggle('on', l.getAttribute('href') === '#' + en.target.id)); } });
+  }, {rootMargin:'-30% 0px -60% 0px'});
+  secs.forEach(s => s && io.observe(s));
+
+  /* ---------- 設計方向 ---------- */
+  const DIRS = [
+    {id:'A', name:'握住支撐台上的球', stars:2, rec:'建議起點',
+      scene:'掌心前方放一個小支撐台,球放在上面,剛好在手指可以包住的位置。',
+      success:'至少 3 根手指加上拇指接觸到球,而且球還在原位,連續維持 N 步。' + tag('warn') + '(N 待定)',
+      reward:'指尖到球表面的距離(引導手指靠近)+ 接觸手指數的獎勵 − 球被推走的懲罰。可直接沿用 <code>task_utils.py</code> 的 <code>fingertip_local_point()</code>、<code>surface_distance()</code>。',
+      pro:'最容易先做出結果;球有支撐,不會一碰就掉。', con:'還不算真正的「抓」,不考驗握力。',
+      curr:'先用比較大、比較輕、摩擦力大的球;支撐台高度固定在手指最容易包住的位置,之後再隨機化球的位置。'},
+    {id:'B', name:'握住後撤掉支撐台', stars:3, rec:'真正的「抓」',
+      scene:'前 K 步跟 A 一樣;第 K 步後支撐台消失,球必須靠手指的力量撐住。',
+      success:'支撐台消失後,球留在掌心附近(例如 3 cm 以內)維持 N 步。' + tag('warn'),
+      reward:'A 的 reward,再加上「撤台後球離掌心的距離」;這一項只在至少 3 根手指接觸時才啟動。',
+      pro:'最接近「抓球」的版本,考驗握力和接觸穩定度。', con:'球一掉回合就失敗,學習訊號比較少。',
+      curr:'一開始支撐台不撤(等於方向 A);成功率穩定後,逐步提早撤台的時間 K,或改成逐步降低支撐台。'},
+    {id:'C', name:'握住球並轉手腕', stars:4, rec:'動態穩定度',
+      scene:'在 B 的基礎上,要求手腕轉到指定角度(範圍 −0.67 ~ 0.9 rad)。',
+      success:'手腕到達指定角度,球仍留在掌心附近,維持 N 步。' + tag('warn'),
+      reward:'B 的 reward + 手腕角度誤差;角度項只在球握穩後才啟動。',
+      pro:'檢驗動作過程中能不能握得穩。', con:'要同時處理握力和手腕運動,難度明顯增加。',
+      curr:'先從很小的目標角度開始,成功後逐步加大角度與轉動速度。'},
+    {id:'D', name:'加上簡化「手臂」,真的抓起來', stars:4, rec:'參考 Adroit',
+      scene:'在手的底座加入 1–3 個可滑動的關節(例如上下移動)。球放在桌上:手往下 → 握住 → 往上抬。' + tag('warn') + '(MuJoCo 場景是否能這樣改,尚未驗證)',
+      success:'球離開桌面達到一定高度並維持 N 步。',
+      reward:'參考 Adroit:手靠近球 → 球離開桌面才啟動抬升項 → 越接近目標高度獎勵越大。',
+      pro:'真正的「抓起來」,可直接對照 Adroit Relocate 的設計。', con:'動作從 17 維增加到 18–20 維,任務變長;要修改手的模型。',
+      curr:'先讓手從「已經握住球」的姿勢開始只練抬升,再改成從張開的手開始。'}
+  ];
+  let curDir = store.get('dir', 'A'); if (!DIRS.find(d => d.id === curDir)) curDir = 'A';
+  const tabs = $('#dirTabs'), panel = $('#dirPanel'), currToggle = $('#currToggle'), currText = $('#currText');
+  DIRS.forEach(d => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('role', 'tab'); b.id = 'tab' + d.id;
+    b.innerHTML = '<span class="l">' + d.id + '</span>' + d.name;
+    b.addEventListener('click', () => { curDir = d.id; store.set('dir', curDir); renderDir(); });
+    tabs.appendChild(b);
+  });
+  currToggle.checked = !!store.get('curr', false);
+  currToggle.addEventListener('change', () => { store.set('curr', currToggle.checked); renderDir(); });
+  function renderDir(){
+    const d = DIRS.find(x => x.id === curDir);
+    [...tabs.children].forEach(b => b.setAttribute('aria-selected', b.id === 'tab' + d.id ? 'true' : 'false'));
+    const stars = '★'.repeat(d.stars) + '<span class="off">' + '★'.repeat(5 - d.stars) + '</span>';
+    panel.innerHTML =
+      '<div class="panel-top"><h3>方向 ' + d.id + ':' + d.name + '</h3><span><span class="note">' + d.rec + ' · 難度 </span><span class="stars" aria-label="難度 ' + d.stars + ' / 5">' + stars + '</span></span></div>' +
+      '<dl class="spec"><dt>場景</dt><dd>' + d.scene + '</dd><dt>成功條件</dt><dd>' + d.success + '</dd><dt>reward</dt><dd>' + d.reward + '</dd></dl>' +
+      '<div class="proscons"><div><b>優點</b>' + d.pro + '</div><div><b>缺點</b>' + d.con + '</div></div>';
+    currText.innerHTML = currToggle.checked ? '方向 ' + d.id + ':' + d.curr : '勾選後,顯示這個方向套用課程學習時,怎麼由易到難安排。';
+  }
+  renderDir();
+
+  /* ---------- reward 工具 ---------- */
+  const sDist = $('#sDist'), sCont = $('#sCont'), sOff = $('#sOff'), svg = $('#rewardSvg');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (n, a, txt) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (txt !== undefined) e.textContent = txt; return e; };
+  // 示意係數
+  const C = {reach:-0.5, contact:0.6, hold:-0.5, bonus:5};
+  const W = 560, labelW = 132, x0 = labelW + 8, x1 = W - 16, dom = [-6, 6];
+  const sx = v => x0 + (v - dom[0]) / (dom[1] - dom[0]) * (x1 - x0);
+  function draw(){
+    const d = +sDist.value, n = +sCont.value, h = +sOff.value;
+    $('#oDist').textContent = d.toFixed(1) + ' cm';
+    $('#oCont').textContent = n + ' 根';
+    $('#oOff').textContent = h.toFixed(1) + ' cm';
+    const holdOn = n >= 3, success = n >= 4 && h < 3;
+    const rows = [
+      {k:'靠近', sub:'−0.5 × 距離', v:C.reach * d, on:true},
+      {k:'接觸', sub:'+0.6 × 手指數', v:C.contact * n, on:true},
+      {k:'握住', sub:'接觸 ≥ 3 才啟動', v:holdOn ? C.hold * h : 0, on:holdOn},
+      {k:'成功獎勵', sub:'≥ 4 根且 < 3 cm', v:success ? C.bonus : 0, on:success}
+    ];
+    const total = rows.reduce((s, r) => s + r.v, 0);
+    $('#totalV').textContent = (total >= 0 ? '+' : '') + total.toFixed(1);
+    $('#stateChips').innerHTML =
+      '<span class="chip on">靠近:計分中</span><span class="chip on">接觸:計分中</span>' +
+      '<span class="chip' + (holdOn ? ' on' : '') + '">握住:' + (holdOn ? '已啟動' : '未啟動(接觸 < 3)') + '</span>' +
+      '<span class="chip' + (success ? ' on' : '') + '">成功獎勵:' + (success ? '達成' : '未達成') + '</span>';
+    svg.replaceChildren();
+    const top = 14, rowH = 50, barH = 20, bottom = top + rows.length * rowH;
+    [-6, -3, 0, 3, 6].forEach(t => {
+      svg.appendChild(el('line', {x1:sx(t), x2:sx(t), y1:top - 4, y2:bottom, stroke:'var(--line)', 'stroke-width':t === 0 ? 1.5 : 1, 'stroke-dasharray':t === 0 ? '' : '3 4'}));
+      svg.appendChild(el('text', {x:sx(t), y:bottom + 18, 'text-anchor':'middle', 'font-size':12, fill:'var(--muted)', 'font-family':'IBM Plex Mono, monospace'}, (t > 0 ? '+' : '') + t));
+    });
+    svg.appendChild(el('line', {x1:sx(0), x2:sx(0), y1:top - 4, y2:bottom, stroke:'var(--muted)', 'stroke-width':1.5}));
+    rows.forEach((r, i) => {
+      const y = top + i * rowH + (rowH - barH) / 2;
+      svg.appendChild(el('text', {x:0, y:y + 9, 'font-size':14, fill:r.on ? 'var(--ink)' : 'var(--muted)', 'font-weight':500}, r.k));
+      svg.appendChild(el('text', {x:0, y:y + 26, 'font-size':11, fill:'var(--muted)'}, r.sub));
+      const v = Math.max(dom[0], Math.min(dom[1], r.v));
+      const xa = sx(Math.min(0, v)), w = Math.abs(sx(v) - sx(0));
+      if (!r.on) {
+        svg.appendChild(el('rect', {x:sx(0) - 1, y:y, width:2, height:barH, rx:1, fill:'var(--idle)'}));
+        svg.appendChild(el('text', {x:sx(0) + 8, y:y + 14, 'font-size':12, fill:'var(--muted)'}, '未啟動,不計分'));
+      } else {
+        svg.appendChild(el('rect', {x:xa, y:y, width:Math.max(w, 1.5), height:barH, rx:4, fill:v >= 0 ? 'var(--pos)' : 'var(--neg)'}));
+        const lx = v >= 0 ? sx(v) + 6 : sx(v) - 6;
+        svg.appendChild(el('text', {x:lx, y:y + 14, 'font-size':12, 'text-anchor':v >= 0 ? 'start' : 'end', fill:'var(--ink)', 'font-family':'IBM Plex Mono, monospace'}, (r.v >= 0 ? '+' : '') + r.v.toFixed(1)));
+      }
+    });
+  }
+  [sDist, sCont, sOff].forEach(s => s.addEventListener('input', draw));
+  draw();
+
+  /* ---------- 時間軸 ---------- */
+  const STEPS = [
+    {t:'建場景', time:'約半天到一天(估計)', body:'寫出包含手、球、支撐台的場景。方法:在 MuJoCo XML 裡 include 原本的手,或用 <code>MjSpec</code> 編輯 ' + tag('warn') + '。決定球的大小、重量、摩擦力,初步想法是半徑 3–3.5 cm ' + tag('warn') + '。', why:''},
+    {t:'可行性檢查(先不訓練)', time:'含在上一步', body:'用 CEM 最佳化確認「固定某組手指指令,撤掉支撐台後球不會掉」做得到。', why:'握拳 v1 就是沒先檢查,後來才發現成功條件在物理上不可能達成。'},
+    {t:'把結果畫出來看', time:'含在上一步', body:'渲染 CEM 找到的「成功」姿勢,確認真的是在握球,而不是球卡在手指縫裡。', why:'捏合曾出現「碰到側面也判定成功」的漏洞,是畫成圖才發現的。'},
+    {t:'設計觀測與 reward', time:'約半天到一天(估計)', body:'觀測加入球相對掌心的位置和速度(6 個數字);reward 用分段、條件式啟動的設計(見上方 reward 工具)。', why:''},
+    {t:'小規模試訓練', time:'含在上一步', body:'PPO、SAC、TD3 都試。<b>TD3 要加探索雜訊</b>。', why:'前一階段使用的 SB3 預設 TD3 沒有探索雜訊;抓球需要探索,可能學不起來 ' + tag('guess') + '。'},
+    {t:'完整的演算法比較', time:'一天以上(視需要的步數)', body:'沿用前一階段的全自動實驗框架 <code>run_pipeline.py</code>:多個 seed、事先固定判斷規則。', why:''},
+    {t:'學不起來時的備案', time:'視情況', body:'依下方「學不起來怎麼辦」的決策樹逐一嘗試。', why:''}
+  ];
+  const done = store.get('steps', []);
+  const tl = $('#timeline');
+  STEPS.forEach((s, i) => {
+    const li = document.createElement('li');
+    if (done.includes(i)) li.classList.add('done');
+    li.innerHTML = '<span class="num">' + (i + 1) + '</span>' +
+      '<details class="step"><summary><span class="t">' + s.t + '</span><span class="time">' + s.time + '</span></summary>' +
+      '<div class="body"><p>' + s.body + '</p>' + (s.why ? '<p class="why">為什麼:' + s.why + '</p>' : '') +
+      '<label class="check"><input type="checkbox" id="step' + i + '"' + (done.includes(i) ? ' checked' : '') + '>標記為已完成</label></div></details>';
+    tl.appendChild(li);
+    li.querySelector('input').addEventListener('change', e => {
+      const cur = new Set(store.get('steps', []));
+      e.target.checked ? cur.add(i) : cur.delete(i);
+      store.set('steps', [...cur]); li.classList.toggle('done', e.target.checked); prog();
+    });
+  });
+  function prog(){ const n = tl.querySelectorAll('li.done').length; $('#progress').textContent = '進度 ' + n + ' / ' + STEPS.length; }
+  prog();
+
+  /* ---------- 決策樹 ---------- */
+  const T = {
+    q1:{q:'用 CEM 找得到握得住球的姿勢嗎?', yes:'q2', no:'r1'},
+    q2:{q:'用 dense reward 訓練後,成功率還是 0%?', yes:'q3', no:'q5'},
+    q3:{q:'加入課程學習(先易後難)之後,還是 0%?', yes:'q4', no:'rOk'},
+    q4:{q:'用 CEM 找到的握球姿勢當「示範」之後,還是 0%?', yes:'rHer', no:'rOk'},
+    q5:{q:'學得會,但需要的步數非常多(上億步)?', yes:'rMjx', no:'rGo'},
+    r1:{a:'先調整場景再訓練', d:'調整球的大小、重量、摩擦力,或退回方向 A(有支撐台)。連最佳化都做不到的條件,訓練也不會成功。'},
+    rOk:{a:'學得起來了,繼續完整比較', d:'記下是哪個方法讓它學起來的,寫進實驗紀錄;接著做完整的演算法比較。'},
+    rHer:{a:'改用稀疏 reward + HER', d:'只有成功才給分,配合 Hindsight Experience Replay:把失敗的經驗改寫成「假裝目標就是最後到達的位置」。必須搭配 off-policy 演算法(SAC、TD3),SB3 有內建。'},
+    rMjx:{a:'考慮改用 MuJoCo Playground(MJX)', d:'把物理模擬放到 GPU 上大量平行。文獻:LEAP 手轉方塊用 8,192 個環境、兩張 RTX 4090 約 30 分鐘跑 3 億步。代價是要用 MJX 的寫法改寫環境。'},
+    rGo:{a:'照原計畫進行', d:'沿用目前的 CPU 框架做完整的演算法比較。'}
+  };
+  const path = [];
+  function renderNode(id){
+    const n = T[id], node = $('#node');
+    $('#trail').innerHTML = path.length ? path.map(p => '<span>' + p + '</span>').join('') : '<span>起點</span>';
+    if (n.q) {
+      node.innerHTML = '<div class="qtext">' + n.q + '</div><div class="btns">' +
+        '<button type="button" class="btn primary" id="byes">是</button><button type="button" class="btn" id="bno">否</button>' +
+        (path.length ? '<button type="button" class="btn ghost" id="bre">重新開始</button>' : '') + '</div>';
+      $('#byes').onclick = () => { path.push(short(n.q) + ':是'); renderNode(n.yes); };
+      $('#bno').onclick = () => { path.push(short(n.q) + ':否'); renderNode(n.no); };
+      if ($('#bre')) $('#bre').onclick = reset;
+    } else {
+      node.innerHTML = '<div class="answer"><b>建議:' + n.a + '</b><p>' + n.d + '</p></div><div class="btns"><button type="button" class="btn ghost" id="bre">重新開始</button></div>';
+      $('#bre').onclick = reset;
+    }
+  }
+  const short = q => q.replace(/[??]$/, '').slice(0, 14) + (q.length > 15 ? '…' : '');
+  function reset(){ path.length = 0; renderNode('q1'); }
+  reset();
+
+  /* ---------- CPU / GPU ---------- */
+  const MODES = {
+    cpu:{pick:'看步數:TD3 / SAC', body:'<p>物理模擬(MuJoCo)跑在 CPU 上,每一步都很貴:我們實測 SAC/TD3 約每秒 90–230 步,PPO 約每秒 2,100–2,900 步。比「學會需要幾步」時,會重複利用經驗的 off-policy 演算法勝出;比「實際花多少時間」時,PPO 在握拳上反而最快。' + tag('ok') + '</p><p class="note">抓球建議:先用現有框架比較三種演算法,TD3 加探索雜訊。</p>'},
+    gpu:{pick:'看吞吐量:PPO', body:'<p>Isaac Gym、MuJoCo Playground(MJX)把物理模擬也放到 GPU 上,同時跑上千個環境(ORCA 原論文 4,096 個、LEAP 手 8,192 個)。步數幾乎不花時間,PPO 每秒處理大量步數的優勢壓倒一切,所以文獻大多用 PPO。' + tag('ok') + '</p><p class="note">抓球建議:如果需要上億步,值得改寫成 MJX 版本。</p>'}
+  };
+  function setMode(m){
+    $('#mCpu').setAttribute('aria-pressed', m === 'cpu'); $('#mGpu').setAttribute('aria-pressed', m === 'gpu');
+    $('#modeBox').innerHTML = '<span class="note">建議演算法</span><div class="pick">' + MODES[m].pick + '</div>' + MODES[m].body;
+    store.set('mode', m);
+  }
+  $('#mCpu').onclick = () => setMode('cpu'); $('#mGpu').onclick = () => setMode('gpu');
+  setMode(store.get('mode', 'cpu') === 'gpu' ? 'gpu' : 'cpu');
+
+  /* ---------- 文獻 ---------- */
+  const P = [
+    {t:'ORCA Hand 原論文', v:'IROS 2025', tp:'ORCA', s:'同一隻手已用 RL 在手中轉動網球:IsaacGym、4,096 個平行環境、訓練 1 小時後直接上真機。', u:'證明「ORCA 手 + 球」可行;但 reward 設計未公開,要自己設計。', l:'https://arxiv.org/abs/2504.04259'},
+    {t:'Rajeswaran 等:DAPG / Adroit', v:'2017', tp:'Reward', s:'提出「把球拿起來移到目標」的 Relocate 任務;少量人類示範大幅降低需要的樣本量。', u:'抓球 reward 的現成範本;可用 CEM 姿勢當示範。', l:'https://arxiv.org/abs/1709.10087'},
+    {t:'UniDexGrasp', v:'CVPR 2023', tp:'Reward', s:'抓取 reward 分 4 段:手勢 → 指尖靠近 → 有接觸才啟動抬起 → 移動;PPO、1,024 個環境、物體課程學習。', u:'「有接觸才啟動」的條件式設計;手勢項可沿用握拳的加權姿勢誤差。', l:'https://arxiv.org/abs/2303.00938'},
+    {t:'D-Grasp', v:'CVPR 2022', tp:'Reward', s:'階層式:低層負責抓穩,高層負責移動物體到目標。', u:'先抓穩、再移動,對應方向 B → C 的順序。', l:'https://arxiv.org/abs/2112.03028'},
+    {t:'Bi-DexHands', v:'NeurIPS 2022', tp:'演算法', s:'雙手靈巧操作基準環境(Isaac Gym);PPO 類演算法能學會簡單操作任務。', u:'摘要未比較 SAC/TD3,不能直接對照我們的結論。', l:'https://arxiv.org/abs/2206.08686'},
+    {t:'MuJoCo Playground', v:'RSS 2025', tp:'演算法', s:'GPU 版 MuJoCo(MJX);LEAP 手轉方塊,8,192 個環境、兩張 RTX 4090 約 30 分鐘 3 億步。', u:'解釋為什麼文獻多用 PPO;需要大量步數時的備案。', l:'https://arxiv.org/abs/2502.08844'},
+    {t:'OpenAI:Learning Dexterous In-Hand Manipulation', v:'2018', tp:'Sim-to-real', s:'領域隨機化讓純模擬訓練的策略能直接用在真機。', u:'走向真機時的核心技術。', l:'https://arxiv.org/abs/1808.00177'},
+    {t:'OpenAI:Solving Rubik’s Cube with a Robot Hand', v:'2019', tp:'Sim-to-real', s:'自動逐步加難的領域隨機化(ADR)。', u:'等於「課程學習 + 領域隨機化」的自動版本。', l:'https://arxiv.org/abs/1910.07113'},
+    {t:'Chen、Xu、Agrawal:General In-Hand Re-Orientation', v:'CoRL 2021', tp:'Sim-to-real', s:'轉動 2,000 多種物體,手掌朝上朝下都可;teacher-student 蒸餾。', u:'模擬中可用完整資訊訓練老師,再蒸餾給學生。', l:'https://arxiv.org/abs/2111.03043'},
+    {t:'HORA', v:'CoRL 2022', tp:'Sim-to-real', s:'只用圓柱體訓練,依關節感測歷史即時適應不同物體。', u:'換不同大小、重量的球時可參考。', l:'https://arxiv.org/abs/2210.04887'},
+    {t:'Plappert 等:Multi-Goal RL', v:'2018', tp:'Reward 備案', s:'Shadow 手任務全部使用稀疏 reward,配合 HER 學習。', u:'dense reward 設計不出來時的退路。', l:'https://arxiv.org/abs/1802.09464'},
+    {t:'Eureka', v:'ICLR 2024', tp:'Reward 備案', s:'讓大型語言模型自動寫 reward,29 個環境中 83% 勝過人類專家,並讓 Shadow 手學會轉筆。', u:'把「寫 reward → 訓練 → 改寫」的循環自動化。', l:'https://arxiv.org/abs/2310.12931'}
+  ];
+  const TOPICS = ['全部', 'ORCA', 'Reward', '演算法', 'Sim-to-real', 'Reward 備案'];
+  let topic = store.get('topic', '全部'); if (!TOPICS.includes(topic)) topic = '全部';
+  const fbox = $('#filters'), grid = $('#paperGrid');
+  TOPICS.forEach(t => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = t + (t === '全部' ? '' : ' · ' + P.filter(p => p.tp === t).length);
+    b.addEventListener('click', () => { topic = t; store.set('topic', t); renderPapers(); });
+    fbox.appendChild(b);
+  });
+  function renderPapers(){
+    [...fbox.children].forEach((b, i) => b.setAttribute('aria-pressed', TOPICS[i] === topic ? 'true' : 'false'));
+    grid.innerHTML = P.filter(p => topic === '全部' || p.tp === topic).map(p =>
+      '<article class="paper"><div class="meta"><span class="topic">' + p.tp + '</span><span>' + p.v + '</span></div>' +
+      '<h3>' + p.t + '</h3><p>' + p.s + '</p><div class="us"><b>對我們:</b>' + p.u + '</div>' +
+      '<a href="' + p.l + '" target="_blank" rel="noopener">' + p.l.replace('https://', '') + '</a></article>').join('');
+  }
+  renderPapers();
+})();
+</script>
