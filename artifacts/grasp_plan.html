@@ -263,7 +263,7 @@ footer{padding-top:2rem;border-top:1px solid var(--line);font-size:var(--step--1
         <tr><td><button class="term" data-tip="觀測(observation):策略每一步看到的資訊。">觀測</button></td><td>34 個數字(17 個關節角度 + 17 個關節速度),<b>目前不包含球的資訊</b></td></tr>
         <tr><td>動作</td><td>17 個數字(各關節目標角度),正規化到 [-1, 1]</td></tr>
         <tr><td>時間</td><td>每步 <span class="mono">0.01 s</span>;每回合最多 300 步(3 秒)</td></tr>
-        <tr><td>手的擺放</td><td><b>固定在底座上</b>,手指朝上(+z),掌心朝 +x,重力朝 −z</td></tr>
+        <tr><td>手的擺放</td><td><b>固定在底座上</b>,手指朝上(+z),掌心朝 +y(拇指也在 +y 側),重力朝 −z</td></tr>
         <tr><td>手腕</td><td>只能沿一個軸轉動,範圍 <span class="mono">−0.67 ~ 0.9 rad</span></td></tr>
         <tr><td>場景物體</td><td>沒有任何可自由移動的物體,球要自己加進場景</td></tr>
       </table>
